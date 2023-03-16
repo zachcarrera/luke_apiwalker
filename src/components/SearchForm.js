@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 export const SearchForm = () => {
     const [category, setCategory] = useState("people");
@@ -13,9 +16,12 @@ export const SearchForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="">Search for:</label>
-            <select
+        <Form
+            onSubmit={handleSubmit}
+            className=" gap-3 d-flex justify-content-between align-items-center"
+        >
+            <Form.Label htmlFor="">Search for:</Form.Label>
+            <Form.Select
                 name="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -23,16 +29,18 @@ export const SearchForm = () => {
             >
                 <option value="people">people</option>
                 <option value="planets">planets</option>
-            </select>
-            <input
+            </Form.Select>
+            <Form.Control
                 type="number"
                 name="id"
                 id=""
                 value={id}
                 onChange={(e) => setId(e.target.value)}
             />
-            <input type="submit" value="Search" />
-        </form>
+            <Button variant="primary" type="submit">
+                Search
+            </Button>
+        </Form>
     );
 };
 

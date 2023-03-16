@@ -1,33 +1,29 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-
-const starterPlanetData = {
-    name: "Yavin IV",
-    rotation_period: "24",
-    orbital_period: "4818",
-    diameter: "10200",
-    climate: "temperate, tropical",
-    gravity: "1 standard",
-    terrain: "jungle, rainforests",
-    surface_water: "8",
-    population: "1000",
-    residents: [],
-    films: ["https://swapi.dev/api/films/1/"],
-    created: "2014-12-10T11:37:19.144000Z",
-    edited: "2014-12-20T20:58:18.421000Z",
-    url: "https://swapi.dev/api/planets/3/",
-};
+import { useParams, useNavigate } from "react-router-dom";
+import Spinner from "react-bootstrap/Spinner";
 
 export const Planet = (props) => {
     const { id } = useParams();
-    const [planetData, setPlanetData] = useState(starterPlanetData);
+    // const [planetData, setPlanetData] = useState(starterPlanetData);
+    const [planetData, setPlanetData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get(`https://swapi.dev/api/planets/${id}`)
-            .then((response) => setPlanetData(response.data));
-    }, [id]);
+            .then((response) => setPlanetData(response.data))
+            .catch((err) => navigate("/not_found"))
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, [id, navigate]);
+
+    if (planetData === null || isLoading) {
+        return <Spinner animation="border" />;
+    }
 
     return (
         <div>

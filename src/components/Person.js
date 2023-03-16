@@ -3,44 +3,17 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useParams, useNavigate } from "react-router-dom";
-
-const startPersonData = {
-    name: "Luke Skywalker",
-    height: "172",
-    mass: "77",
-    hair_color: "blond",
-    skin_color: "fair",
-    eye_color: "blue",
-    birth_year: "19BBY",
-    gender: "male",
-    homeworld: "https://swapi.dev/api/planets/1/",
-    films: [
-        "https://swapi.dev/api/films/1/",
-        "https://swapi.dev/api/films/2/",
-        "https://swapi.dev/api/films/3/",
-        "https://swapi.dev/api/films/6/",
-    ],
-    species: [],
-    vehicles: [
-        "https://swapi.dev/api/vehicles/14/",
-        "https://swapi.dev/api/vehicles/30/",
-    ],
-    starships: [
-        "https://swapi.dev/api/starships/12/",
-        "https://swapi.dev/api/starships/22/",
-    ],
-    created: "2014-12-09T13:50:51.644000Z",
-    edited: "2014-12-20T21:17:56.891000Z",
-    url: "https://swapi.dev/api/people/1/",
-};
+import Spinner from "react-bootstrap/Spinner";
 
 export const Person = (props) => {
     const { id } = useParams();
-    const [personData, setPersonData] = useState(startPersonData);
-    const [homePlanet, setHomePlanet] = useState({ url: "placeholder" });
+    const [personData, setPersonData] = useState(null);
+    const [homePlanet, setHomePlanet] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get(`https://swapi.dev/api/people/${id}`)
             .then((response) => {
@@ -48,16 +21,18 @@ export const Person = (props) => {
                 axios.get(response.data.homeworld).then((planetResponse) => {
                     setHomePlanet(planetResponse.data);
                     console.log(planetResponse.data);
-                    console.log(
-                        planetResponse.data.url.slice(
-                            21
-                            // planetResponse.data.url.indexOf("/planets")
-                        )
-                    );
+                    console.log(planetResponse.data.url.slice(21));
                 });
             })
-            .catch((err) => navigate("/not_found"));
+            .catch((err) => navigate("/not_found"))
+            .finally(() => {
+                setIsLoading(false);
+            });
     }, [id, navigate]);
+
+    if (personData === null || homePlanet === null || isLoading) {
+        return <Spinner animation="border" />;
+    }
 
     return (
         <div>
